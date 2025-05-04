@@ -1,0 +1,27 @@
+import control as ctrl
+
+def calculate_steady_state_error(G, input_type="step"):
+    s = ctrl.TransferFunction.s
+
+    if input_type == "step":
+        R = 1 / s
+    elif input_type == "ramp":
+        R = 1 / s**2
+    elif input_type == "parabola":
+        R = 1 / s**3
+    else:
+        raise ValueError("Geçersiz giriş tipi. step, ramp veya parabola kullan.")
+
+    E = R / (1 + G)
+    ess = ctrl.limit(s * E, s, 0)
+    return ess
+
+
+# Örnek sistem: G(s) = 10 / (s + 2)
+numerator = [10]
+denominator = [1, 2]
+G = ctrl.TransferFunction(numerator, denominator)
+
+for input_type in ["step", "ramp", "parabola"]:
+    ess = calculate_steady_state_error(G, input_type)
+    print(f"{input_type.capitalize()} girişi için kalıcı durum hatası: {ess}")
